@@ -3,8 +3,8 @@
 # Inspired by https://github.com/bobbintb/backup-bash
 
 local_dir="test"
-cloud_dir="one_per:test"
-log_file="backuperrors.txt"
+cloud_dir="remote:test"
+log_file="rclone_auto_sync.log"
 # http://stackoverflow.com/questions/1644856/terminate-running-commands-when-shell-script-is-killed
 trap 'kill -HUP 0' EXIT
 
@@ -28,15 +28,12 @@ function fetch (){
     fi
 }
 
-#Check if inotify-tools is installed
-type -P inotifywait &>/dev/null || { echo "inotifywait command not found."; exit 1; }
+# Check if inotify-tools is installed
+type -P inotifywait &> /dev/null || { echo "inotifywait command not found"; exit 1; }
 
 while true
 do
-
-fetch || exit 0
-
-#Sync with rclone when local files changes
-inotifywait -r -e modify, attrib, close_write, move, create, delete  --format '%T %:e %f' --timefmt '%c' $local_dir  2>&1 >> $log_file && sync
-
+    fetch || exit 0
+    # Sync with rclone when local files changes
+    inotifywait -r -e modify, attrib, close_write, move, create, delete  --format '%T %:e %f' --timefmt '%c' $local_dir  2>&1 >> $log_file && sync
 done
