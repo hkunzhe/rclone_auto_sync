@@ -1,0 +1,13 @@
+[Unit]
+Description=Automatic synchronization with rclone
+After=network.target nss-lookup.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hkz
+ExecStart=rclone_auto_sync.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
