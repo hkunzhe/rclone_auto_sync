@@ -1,10 +1,11 @@
-# !/bin/bash
+#!/bin/sh
+
 # license GPLv2
 # Inspired by https://github.com/bobbintb/backup-bash
 
 local_dir="/Users/hkz/test"
 cloud_dir="one_per:test"
-if [ "$(uname)"=="Darwin" ]
+if [ "$(uname)" == "Darwin" ]
 then
     mac=true
 else
@@ -22,7 +23,7 @@ function sync(){
 
 # Fetch cloud files if exists differences
 function fetch (){
-    if [ "$mac" = true ]
+    if [ "$mac" == true ]
     then
         if rclone check $local_dir $cloud_dir 2>&1 | ggrep -P "[1-9][0-9]*( differences)"
         then
@@ -39,7 +40,7 @@ function fetch (){
 }
 
 # Check if fswatch/inotify-tools is installed
-if [ "$mac" = true ]
+if [ "$mac" == true ]
 then
     type -P fswatch &> /dev/null || { echo "fswatch command not found"; exit 1; }
 else
@@ -50,11 +51,11 @@ while true
 do
     fetch || exit 0
     # Sync with rclone when local files changes
-    if [ "$mac" = true ]
+    if [ "$mac" == true ]
     then
         fswatch $local_dir | while read f; do sync; done
     else
-        inotifywait -r -e modify, attrib, close_write, move, create, delete \
+        inotifywait -r -e modify,attrib,close_write,move,create,delete \
         --format '%T %:e %f' --timefmt '%c' $local_dir 2>&1 && sync
     fi
 done
