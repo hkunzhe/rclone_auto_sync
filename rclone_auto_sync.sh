@@ -3,7 +3,7 @@
 # license GPLv2
 # Inspired by https://github.com/bobbintb/backup-bash
 
-local_dir="/Users/hkz/test"
+local_dir="/Users/hkz/rclone/test"
 cloud_dir="one_per:test"
 if [ "$(uname)" == "Darwin" ]
 then
@@ -53,7 +53,7 @@ do
     # Sync with rclone when local files changes
     if [ "$mac" == true ]
     then
-        fswatch $local_dir | while read f; do sync; done
+        fswatch -o $local_dir | while read f; do sync; done
     else
         inotifywait -r -e modify,attrib,close_write,move,create,delete \
         --format '%T %:e %f' --timefmt '%c' $local_dir 2>&1 && sync
